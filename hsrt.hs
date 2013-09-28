@@ -10,26 +10,23 @@ data Pixel = Pixel {
 } deriving Show
 
 -- A world coordinate
-data Coord = Coord {
-	p :: [Double]
-} deriving Show
-
+type Point = [Double]
 
 -- The view into the world
 data Viewport = Viewport {
-	topLeft     :: Coord,
-	bottomRight :: Coord
+	topLeft     :: Point,
+	bottomRight :: Point
 } deriving Show
 
 -- A ray of light
 data Ray = Ray {
-	origin :: Coord,
-	direction :: Coord
+	origin :: Point,
+	direction :: Point
 } deriving Show
 
 -- A Sphere
 data Sphere = Sphere {
-	center :: Coord,
+	center :: Point,
 	radius :: Double
 } deriving Show
 
@@ -37,16 +34,18 @@ data Sphere = Sphere {
 dot :: Ray -> Ray -> Double
 dot r1 r2 = _dot (dn r1) (dn r2)
 	where 
-		_dot (Coord p0) (Coord p1) = sum (zipWith (*) p0 p1)
+		_dot p0 p1 = sum  (zipWith (*) p0 p1)
 		dn = (direction . normalize)
 
-coordDiff :: Coord -> Coord -> Coord
-coordDiff (Coord p0) (Coord p1) = Coord (zipWith (-) p0 p1)
+coordDiff :: Point -> Point -> Point
+coordDiff p0 p1 = zipWith (-) p0 p1
 
 normalize :: Ray -> Ray
-normalize (Ray o d) = Ray o (Coord (map (/l) (p d)))
+normalize (Ray o d) = Ray o (map (/l) d)
     where 
         l = distance o d
 
-distance :: Coord -> Coord -> Double
-distance c1 c2 = (sqrt . sum . (map (^2))) (zipWith (-) (p c1) (p c2))
+distance :: Point -> Point -> Double
+distance c1 c2 = (sqrt . sum . (map (^2))) diff
+    where
+        diff = coordDiff c1 c2
