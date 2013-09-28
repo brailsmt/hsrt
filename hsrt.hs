@@ -44,12 +44,9 @@ coordDiff :: Coord -> Coord -> Coord
 coordDiff (Coord p0) (Coord p1) = Coord (zipWith (-) p0 p1)
 
 normalize :: Ray -> Ray
-normalize (Ray (origin) (Coord p)) = Ray origin (Coord (map (/norm) p))
-	where norm = (sqrt . sum . (map (^2))) p
+normalize (Ray o d) = Ray o (Coord (map (/l) (p d)))
+    where 
+        l = distance o d
 
---distance :: Coord -> Coord -> Double
---distance c1 c2 = (sqrt . sum . (map . (^2))) (zipWith (-) (p c1) (p c2))
---
---length :: Ray -> Double
---length (Ray o d) = distance o d
-
+distance :: Coord -> Coord -> Double
+distance c1 c2 = (sqrt . sum . (map (^2))) (zipWith (-) (p c1) (p c2))
