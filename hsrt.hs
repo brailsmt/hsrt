@@ -20,7 +20,7 @@ data Viewport = Viewport {
 
 -- A ray of light
 data Ray = Ray {
-	origin :: Point,
+	origin    :: Point,
 	direction :: Point
 } deriving Show
 
@@ -30,22 +30,22 @@ data Sphere = Sphere {
 	radius :: Double
 } deriving Show
 
--- dot product of two rays, unit or otherwise
-dot :: Ray -> Ray -> Double
-dot r1 r2 = _dot (dn r1) (dn r2)
-	where 
-		_dot p0 p1 = sum  (zipWith (*) p0 p1)
-		dn = (direction . normalize)
+diff :: Point -> Point -> Point
+diff = zipWith (-)
 
-coordDiff :: Point -> Point -> Point
-coordDiff p0 p1 = zipWith (-) p0 p1
+-- Euclidian distance between two points in n-space
+distance :: Point -> Point -> Double
+distance p1 p2 = (sqrt . sum . (map (^2))) (diff p1 p2)
 
 normalize :: Ray -> Ray
 normalize (Ray o d) = Ray o (map (/l) d)
     where 
         l = distance o d
 
-distance :: Point -> Point -> Double
-distance c1 c2 = (sqrt . sum . (map (^2))) diff
-    where
-        diff = coordDiff c1 c2
+-- dot product of two rays, unit or otherwise
+dot :: Ray -> Ray -> Double
+dot r1 r2 = _dot (dn r1) (dn r2)
+	where 
+		_dot p0 p1 = sum (zipWith (*) p0 p1)
+		dn = (direction . normalize)
+
