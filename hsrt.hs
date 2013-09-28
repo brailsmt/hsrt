@@ -37,19 +37,19 @@ data Sphere = Sphere {
 dot :: Ray -> Ray -> Double
 dot r1 r2 = _dot (dn r1) (dn r2)
 	where 
-		_dot (Coord x y z) (Coord i j k) = sum [(x*i), (y*j), (z*k)]
+		_dot (Coord p0) (Coord p1) = sum (zipWith (*) p0 p1)
 		dn = (direction . normalize)
 
 coordDiff :: Coord -> Coord -> Coord
-coordDiff (Coord x0 y0 z0) (Coord x1 y1 z1) = Coord (x0-x1) (y0-y1) (z0-z1)
+coordDiff (Coord p0) (Coord p1) = Coord (zipWith (-) p0 p1)
 
 normalize :: Ray -> Ray
-normalize (Ray (origin) (Coord x y z)) = Ray origin (Coord (x/norm) (y/norm) (z/norm))
-	where norm = (sqrt . sum . (map (^2))) [x,y,z]
+normalize (Ray (origin) (Coord p)) = Ray origin (Coord (map (/norm) p))
+	where norm = (sqrt . sum . (map (^2))) p
 
-distance :: Coord -> Coord -> Double
-distance c1 c2 = (sqrt . sum . (map . (^2)) . (zipWith (-))) (p c1) (p c2)
-
-length :: Ray -> Double
-length (Ray origin direction) = distance o d
+--distance :: Coord -> Coord -> Double
+--distance c1 c2 = (sqrt . sum . (map . (^2))) (zipWith (-) (p c1) (p c2))
+--
+--length :: Ray -> Double
+--length (Ray o d) = distance o d
 
