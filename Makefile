@@ -1,2 +1,2 @@
 all:
-	ghc -threaded hsrt.hs -o hsrt
+	ghc -threaded *.hs -o hsrt

@@ -1,0 +1,6 @@
+library
+  hs-source-dirs:      src
+  exposed-modules:     HSRT
+  other-modules:       HSRT.Test
+  build-depends:       base
+  ghc-options:         -Wall -threaded -o hsrt
