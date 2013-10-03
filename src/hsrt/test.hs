@@ -2,6 +2,7 @@ module HSRT.Test where
 
 import HSRT
 import HSRT.Types
+
 import Test.QuickCheck
 
 ---------------------------------------------------
