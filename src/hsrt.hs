@@ -12,3 +12,4 @@ camera = Ray [0,0,0] [0,0,1]
 
 --scene :: Scene a
 --scene = [mksphere [0,0,20] 1 defaultColor, mksphere [0.5,0,5] 1 defaultColor]
+
