@@ -27,6 +27,11 @@ class Renderable a where
     normalAt     :: Ray -> Double -> a -> Ray
     colorAt      :: Ray -> Double -> a -> Color
 
+-- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
+-- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
+-- first row, Pixels [width+1..width*2] as row 2, etc...
+type Image = [Color]
+
 -- A Scene is just a list of Renderables
 type Scene a = [Renderable a]
 

@@ -1,5 +1,6 @@
 module HSRT.Renderable.Sphere 
 (
+    Sphere,
     mksphere,
     intersection,
     normalAt,
