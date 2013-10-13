@@ -14,4 +14,7 @@ scene :: [Sphere]
 scene = [mksphere [0,0,20] 1 defaultColor, mksphere [0.5,0,5] 1 defaultColor]
 
 renderScene :: Viewport -> [Sphere] -> Image
-renderScene _ _ = [Color 1 0 0| x <- [0..512*512]]
+renderScene v _ = Image v [(Color (x/w) (x/w) (x/w)) | x<-[0..w],y<-[0..h]]
+    where
+        w = width v
+        h = height v

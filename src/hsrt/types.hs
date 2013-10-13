@@ -10,10 +10,11 @@ data Color = Color {
 -- A world coordinate
 type Point = [Double]
 
--- The view into the world
+-- The view into the world.  The top left most corner is (0, 0), the bottom right corner defines how large the image is
+-- and is (width, height).
 data Viewport = Viewport {
-	topLeft     :: Point,
-	bottomRight :: Point
+    width  :: Double,
+    height :: Double
 } deriving (Show, Eq)
 
 -- A ray of light
@@ -30,7 +31,10 @@ class Renderable a where
 -- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
 -- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
 -- first row, Pixels [width+1..width*2] as row 2, etc...
-type Image = [Color]
+data Image = Image {
+    viewport :: Viewport,
+    imgData :: [Color]
+} deriving (Show, Eq)
 
 -- A Scene is just a list of Renderables
 type Scene a = [Renderable a]
