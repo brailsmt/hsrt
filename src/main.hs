@@ -3,6 +3,7 @@ module Main where
 import HSRT
 import HSRT.Types
 import HSRT.Renderable
+import HSRT.SceneReader
 
 import System.IO
 import System.Environment
@@ -10,10 +11,8 @@ import Data.List.Split
 
 ppmMaxColorValue = 255
 
-readScene = []
-
-render :: Double -> Double -> [Sphere] -> Image
-render w h _ = renderScene (Viewport w h) []
+rndr :: Double -> Double -> [Sphere] -> Image
+rndr w h scene = renderScene (Viewport w h) scene
 
 {- for each pixel return the PPM representation for that pixel -}
 getPpmForPixel :: Color -> String
@@ -43,10 +42,11 @@ writeImage handle image = do
     --clrs      = map (map (getPpmForPixel)) scanlines  -- This is now a [[String]]
     --scanlines = toScanlines (floor w) $ render w h
 
+-- Accepts 3 arguments:  the output filename, width and heigth
 main = do
   args <- getArgs
   imgHandle <- openFile (fname args) WriteMode
-  writeImage imgHandle $ render (width args) (height args) (readScene)
+  writeImage imgHandle $ rndr (width args) (height args) (readScene "")
   hClose imgHandle
     where 
       fname  = head 

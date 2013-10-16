@@ -1,5 +1,7 @@
 module HSRT.Types where
 
+import Debug.Hood.Observe
+
 -- Pixel datatype for recording color information for a given pixel
 data Color = Color {
 	red   :: Double,
@@ -66,3 +68,7 @@ defaultColor = Color 1 0 0
 diff :: Point -> Point -> Point
 diff = zipWith (-) 
 
+instance Observable Color where { observer = observeBase }
+instance Observable Ray where { observer = observeBase }
+instance Observable Viewport where { observer = observeBase }
+instance Observable Image where { observer = observeBase }

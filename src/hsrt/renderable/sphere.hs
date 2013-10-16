@@ -8,6 +8,7 @@ module HSRT.Renderable.Sphere
 ) where
 
 import HSRT.Types
+import Debug.Hood.Observe
 
 -- A Sphere
 data Sphere = Sphere {
@@ -18,6 +19,9 @@ data Sphere = Sphere {
 
 mksphere :: Point -> Double -> Color -> Sphere
 mksphere center radius color = Sphere center radius color
+
+instance Observable Sphere where
+    observer = observeBase
 
 -- A sphere is renderable
 instance Renderable Sphere where 
