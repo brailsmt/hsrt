@@ -16,8 +16,8 @@ scene = [mksphere [0,0,20] 1 defaultColor, mksphere [0.5,0,5] 1 defaultColor]
 
 -- Get all rays through the viewport for a given point.  At this time it's just a simple 1:1 ray to pixel mapping, but
 -- this provides us an easy way to add subpixels and jitters
-raysThroughViewportAt :: Point -> Double -> Double -> [Ray]
-raysThroughViewportAt camera x y = (normalize $ Ray camera [x, y, 1]) : []
+raysThroughViewportAt :: Point -> Point -> [Ray]
+raysThroughViewportAt camera point = (normalize $ Ray camera [(head point), (head $ tail point), (last point)]) : []
 
 -- For a given ray and scene, find all places where the ray intersects anything in the scene
 findIntersections :: Ray -> [Sphere] -> [(Double, Sphere)]
@@ -34,12 +34,13 @@ render vport scene x y = (observe "colorAt" (colorAt)) (head rays) (fst intersec
     where
         w            = width vport
         h            = height vport
-        rays         = raysThroughViewportAt [0,0,0] w h
+        d            = last $ topLeft vport
+        rays         = raysThroughViewportAt [0,0,0] [w, h, d]
         intersection = head $ sortIntersections $ (observe "findIntersections" (findIntersections)) (head rays) scene
 
 renderScene :: Viewport -> [Sphere] -> Image
 renderScene vport scene = Image vport [(_render x y) | x<-[0..w],y<-[0..h]]
     where 
-        w       = width vport
-        h       = height vport
+        w       = (width  vport) - 1
+        h       = (height vport) - 1
         _render = (render vport scene)

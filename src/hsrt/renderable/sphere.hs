@@ -16,9 +16,7 @@ data Sphere = Sphere {
 	radius :: Double,
     color  :: Color
 } deriving (Show, Eq)
-
-mksphere :: Point -> Double -> Color -> Sphere
-mksphere center radius color = Sphere center radius color
+mksphere = Sphere
 
 instance Observable Sphere where
     observer = observeBase

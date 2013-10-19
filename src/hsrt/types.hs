@@ -2,12 +2,19 @@ module HSRT.Types where
 
 import Debug.Hood.Observe
 
+-- Constant for the max value that our PPM RGB colors can have.
+ppmMaxColorValue = 255
+
 -- Pixel datatype for recording color information for a given pixel
 data Color = Color {
 	red   :: Double,
 	green :: Double,
 	blue  :: Double
-} deriving (Show, Eq)
+} deriving (Eq)
+instance Show Color where 
+  show (Color r g b) = (conv r) ++ " " ++ (conv g) ++ " " ++ (conv b) ++ "\t"
+    where
+      conv c = (show $ round $ c * ppmMaxColorValue)
 
 -- A world coordinate
 type Point = [Double]
@@ -15,9 +22,23 @@ type Point = [Double]
 -- The view into the world.  The top left most corner is (0, 0), the bottom right corner defines how large the image is
 -- and is (width, height).
 data Viewport = Viewport {
-    width  :: Double,
-    height :: Double
+    topLeft     :: Point,
+    bottomRight :: Point
 } deriving (Show, Eq)
+-- Build a viewport of width x heigth with the camera centered in the middle at a distance 'dist' from the viewport.  
+-- The top left point is (-1/2 width, -1/2 height, dist).
+-- The bottom right is (1/2 width, 1/2 height, dist).
+-- The distance is the distance from the camera
+mkviewport :: Double -> Double -> Double -> Viewport
+mkviewport w h d = Viewport [-halfw, -halfh, d] [halfw, halfw, d]
+    where
+        halfw = fromIntegral $ floor   $ (1/2)*w
+        halfh = fromIntegral $ ceiling $ (1/2)*h
+width :: Viewport -> Double
+width (Viewport tl br) = abs $ (head tl) - (head br)
+
+height :: Viewport -> Double
+height (Viewport tl br) = abs $ (head $ tail tl) - (head $ tail br)
 
 -- A ray of light
 data Ray = Ray {

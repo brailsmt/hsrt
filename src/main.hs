@@ -7,40 +7,24 @@ import HSRT.SceneReader
 
 import System.IO
 import System.Environment
+import Data.List
 import Data.List.Split
 
-ppmMaxColorValue = 255
-
-rndr :: Double -> Double -> [Sphere] -> Image
-rndr w h scene = renderScene (Viewport w h) scene
-
-{- for each pixel return the PPM representation for that pixel -}
-getPpmForPixel :: Color -> String
-getPpmForPixel (Color red green blue) = r ++ " " ++ g ++ " " ++ b ++ "  "
-    where 
-        r = show $ round $ red * ppmMaxColorValue
-        g = show $ round $ green * ppmMaxColorValue
-        b = show $ round $ blue * ppmMaxColorValue
-
-{- Break a list of colors into scanlines of width length -}
---toScanlines :: Int -> Image -> [Image]
---toScanlines width img = chunksOf width img
-
+-- Print a PPM header for a P3 PPM image.
 ppmHeader :: Image -> String
-ppmHeader (Image (Viewport w h) _) = "P3 " ++ (show $ floor w) ++ " " ++ (show $ floor h) ++ " " ++ (show $ ppmMaxColorValue) ++ "\n"
+ppmHeader (Image vp _) = "P3 " ++ (show $ width vp) ++ " " ++ (show $ height vp) ++ " " ++ (show $ ppmMaxColorValue) ++ "\n"
 
+-- Convert an image to PPM data.
 ppmData :: Image -> [String]
-ppmData (Image (Viewport w h) imgdata) = map (getPpmForPixel) imgdata
+ppmData (Image vp imgdata) = intercalate ["\n"] (chunksOf (floor $ width vp) (map (show) imgdata))
 
+-- Write an image to a file handle
 writeImage :: Handle -> Image -> IO ()
 writeImage handle image = do
   putStr $ ppmHeader image 
   mapM_ (putStr) $ ppmData image
   where
     putStr    = hPutStr handle
-    --rows      = map unwords clrs -- This is now a [String]
-    --clrs      = map (map (getPpmForPixel)) scanlines  -- This is now a [[String]]
-    --scanlines = toScanlines (floor w) $ render w h
 
 -- Accepts 3 arguments:  the output filename, width and heigth
 main = do
@@ -52,3 +36,4 @@ main = do
       fname  = head 
       width  = (read . head . tail)
       height = (read . head . tail . tail)
+      rndr w h scene = renderScene (mkviewport w h 1) scene
