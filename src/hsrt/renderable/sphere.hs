@@ -1,8 +1,10 @@
 module HSRT.Renderable.Sphere 
 (
     Sphere,
+    center,
+    radius,
     mksphere,
-    intersection,
+    intersectionT,
     normalAt,
     colorAt,
 ) where
@@ -34,13 +36,16 @@ instance Renderable Sphere where
 
   -- Finds the closest point on the sphere where the ray intersects and returns the value for t to determine the point
   -- along the ray from the formula p = r0 + d*t.
-  intersection ray sphere 
+  intersectionT ray sphere 
       | discriminant < 0 = -1.0
       | t0 >= 0          = t0
       | otherwise        = t1
       where 
-          b  = 2 * (sum (zipWith (*) (direction ray) (diff (origin ray) (center sphere))))
-          c  =     (sum $ map (^2) $ diff (origin ray) (center sphere)) - (radius sphere)^2
-          discriminant = b^2 - 4*c
-          t0 = (-b - sqrt discriminant)/2
-          t1 = (-b + sqrt discriminant)/2
+          v  = diff (origin ray) (center sphere)
+          d  = direction ray
+          a  = d `dot` d
+          b  = v `dot` d
+          c  = v `dot` v - (radius sphere)^2
+          t0  = ((-b) - (sqrt discriminant))/ a
+          t1  = ((-b) + (sqrt discriminant))/ a
+          discriminant = (b^2) - (a * c)

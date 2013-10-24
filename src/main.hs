@@ -3,12 +3,16 @@ module Main where
 import HSRT
 import HSRT.Types
 import HSRT.Renderable
+import HSRT.Renderable.Sphere
 import HSRT.SceneReader
 
 import System.IO
 import System.Environment
 import Data.List
 import Data.List.Split
+
+
+--intersection = head $ sortIntersections $ (observe "findIntersections" (findIntersections)) (head rays) scene
 
 -- Print a PPM header for a P3 PPM image.
 ppmHeader :: Image -> String

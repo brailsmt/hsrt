@@ -1,7 +1,7 @@
 module HSRT.Renderable (
     Sphere,
     mksphere,
-    intersection,
+    intersectionT,
     normalAt,
     colorAt,
 ) where

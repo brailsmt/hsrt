@@ -12,7 +12,7 @@ camera :: Ray
 camera = Ray [0,0,0] [0,0,1]
 
 scene :: [Sphere]
-scene = [mksphere [0,0,20] 1 defaultColor, mksphere [0.5,0,5] 1 defaultColor]
+scene = [mksphere [0,0,5] 1.123 (Color 1 1 1)] --, mksphere [0.5,0,5] 1 defaultColor]
 
 -- Get all rays through the viewport for a given point.  At this time it's just a simple 1:1 ray to pixel mapping, but
 -- this provides us an easy way to add subpixels and jitters
@@ -23,20 +23,26 @@ raysThroughViewportAt camera point = (normalize $ Ray camera [(head point), (hea
 findIntersections :: Ray -> [Sphere] -> [(Double, Sphere)]
 findIntersections ray objs = [((_intersection obj), obj) | obj <- objs]
     where
-        _intersection = intersection ray
+        _intersection = intersectionT ray
 
 sortIntersections :: [(Double, Sphere)] -> [(Double, Sphere)]
 sortIntersections intersections = sortBy (\x y -> compare (fst x) (fst y)) intersections
 
+getColorAt :: Ray -> [(Double, Sphere)] -> Color
+getColorAt _ []     = defaultColor
+getColorAt r (t:ts) 
+    | (fst t) < 0 = defaultColor
+    | otherwise   = colorAt r (fst t) (snd t)
+
 -- This is where the magic happens.  Determine the color for each pixel in the image.
 render :: Viewport -> [Sphere] -> Double -> Double -> Color
-render vport scene x y = (observe "colorAt" (colorAt)) (head rays) (fst intersection) (snd intersection)
+render vport scene x y = getColorAt (head rays) isects
     where
-        w            = width vport
-        h            = height vport
-        d            = last $ topLeft vport
-        rays         = raysThroughViewportAt [0,0,0] [w, h, d]
-        intersection = head $ sortIntersections $ (observe "findIntersections" (findIntersections)) (head rays) scene
+        w      = width vport
+        h      = height vport
+        d      = last $ topLeft vport
+        rays   = raysThroughViewportAt [0,0,0] [w, h, d]
+        isects = sortIntersections $ findIntersections (head rays) scene
 
 renderScene :: Viewport -> [Sphere] -> Image
 renderScene vport scene = Image vport [(_render x y) | x<-[0..w],y<-[0..h]]

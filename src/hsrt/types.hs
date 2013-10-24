@@ -47,9 +47,9 @@ data Ray = Ray {
 } deriving (Show, Eq)
 
 class Renderable a where
-    intersection :: Ray -> a      -> Double
-    normalAt     :: Ray -> Double -> a -> Ray
-    colorAt      :: Ray -> Double -> a -> Color
+    intersectionT :: Ray -> a      -> Double
+    normalAt      :: Ray -> Double -> a -> Ray
+    colorAt       :: Ray -> Double -> a -> Color
 
 -- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
 -- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
@@ -78,12 +78,11 @@ normalize (Ray o d) = Ray o (map (/l) d)
 distance :: Point -> Point -> Double
 distance p1 p2 = (sqrt . sum . (map (^2))) $ diff p1 p2
 
--- dot product of two rays
-dot :: Ray -> Ray -> Double
-dot (Ray _ d0) (Ray _ d1) = sum $ zipWith (*) d0 d1
+-- dot product
+dot a b = (sum (zipWith (*) a b))
 
 
-defaultColor = Color 1 0 0
+defaultColor = Color 0 0 0
 
 -- Subtract one point from another
 diff :: Point -> Point -> Point
