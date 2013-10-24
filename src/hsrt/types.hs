@@ -32,8 +32,8 @@ data Viewport = Viewport {
 mkviewport :: Double -> Double -> Double -> Viewport
 mkviewport w h d = Viewport [-halfw, -halfh, d] [halfw, halfw, d]
     where
-        halfw = fromIntegral $ floor   $ (1/2)*w
-        halfh = fromIntegral $ ceiling $ (1/2)*h
+        halfw = (1/2)*(w-1)
+        halfh = (1/2)*(h-1)
 width :: Viewport -> Double
 width (Viewport tl br) = abs $ (head tl) - (head br)
 
