@@ -7,7 +7,7 @@ import HSRT.Renderable
 import Text.ParserCombinators.Parsec
 
 readScene :: String -> [Sphere]
-readScene _ = (mksphere [0,0,10] 1.0 (Color 1 0 0)) : (mksphere [0,0,100] 23.0 (Color 1 0 0)) : []
+readScene _ = (mksphere [0,0,90] 50 (Color 1 0 0)) : []
 
 scene = "sphere: (0,0,0) 0xff0000"
 

@@ -47,10 +47,20 @@ render vport scene = Image vport (map (getColorAt) isects)
 --render' :: Viewport -> [Sphere] -> [Ray] -> [Color]
 --render' vp scn rays = map (findIntersections scn) rays
 
+-- We shoot rays through the window.  If the image is to be 8x8, then this will shoot 64 rays through the window, always
+-- ensuring that a ray will shoot through each of the corners of the window and the center of the window at (0,0,1).
 genRays :: Point -> Viewport -> [Ray]
-genRays cam (Viewport tl br) = [normalize (Ray cam [x, y, d]) | x<-[(head tl)..(head br)], y<-[(head $ tail tl)..(head $ tail br)]]
+-- genRays cam vp = [normalize (Ray cam [x, y, d]) | x<-[(head tl)..(head br)], y<-[(head $ tail tl)..(head $ tail br)]]
+genRays cam vp = [(Ray cam [x, y, (last $ topLeft vp)]) | x<-[fx, fx+dx..lx], y<-[fy, fy+dy..ly], x < (head wbr) && y < (head $ tail wbr)]
     where
-        d = last tl
+        wtl = topLeft window
+        wbr = bottomRight window
+        dx  = (width window) / (width vp)
+        dy  = (height window) / (height vp)
+        fx  = head wtl + (dx/2.0)
+        lx  = head wbr + (dx/2.0)
+        fy  = (head $ tail wtl) + (dy/2.0)
+        ly  = (head $ tail wbr) + (dy/2.0)
 
 renderScene :: Viewport -> [Sphere] -> Image
 renderScene vport scene = render vport scene

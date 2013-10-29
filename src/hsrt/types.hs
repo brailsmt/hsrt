@@ -19,6 +19,9 @@ instance Show Color where
 -- A world coordinate
 type Point = [Double]
 
+-- The window is a fixed width window through which we view the world
+window = Viewport [-1,-1,1] [1,1,1]
+
 -- The view into the world.  The top left most corner is (0, 0), the bottom right corner defines how large the image is
 -- and is (width, height).
 data Viewport = Viewport {
@@ -32,8 +35,8 @@ data Viewport = Viewport {
 mkviewport :: Double -> Double -> Double -> Viewport
 mkviewport w h d = Viewport [-halfw, -halfh, d] [halfw, halfw, d]
     where
-        halfw = (1/2)*(w-1)
-        halfh = (1/2)*(h-1)
+        halfw = (1/2)*w
+        halfh = (1/2)*h
 width :: Viewport -> Double
 width (Viewport tl br) = abs $ (head tl) - (head br)
 
