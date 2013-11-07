@@ -3,17 +3,10 @@ module HSRT.Renderable.Sphere where
 import HSRT.Types
 import Debug.Hood.Observe
 
--- A Sphere
-data Sphere = Sphere {
-	center :: Point,
-	radius :: Double,
-    color  :: Color
-} deriving (Show, Eq)
-
 instance Observable Sphere where
     observer = observeBase
 
--- A sphere is renderable
+-- A sphere is renderable...  
 instance Renderable Sphere where 
   -- Find the color at a particular point on the sphere 
   -- (this is trivial for solids, but for bit maps and bump maps it won't be)

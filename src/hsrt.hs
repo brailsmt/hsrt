@@ -29,13 +29,6 @@ findIntersections objs ray = [((_intersection obj), (ray, obj)) | obj <- objs]
 sortIntersections :: [(Double, (Ray, Sphere))] -> [(Double, (Ray, Sphere))]
 sortIntersections intersections = sortBy (\x y -> compare (fst x) (fst y)) intersections
 
---getColorAt :: Intersection -> Color
---getColorAt (t:ts) 
---    | (fst t) < 0 = defaultColor
---    | otherwise   = colorAt r (fst t) obj
---        where
---            r   = (fst$snd t)
---            obj = (snd$snd t)
 getColorAt _ = defaultColor
 
 -- Returns the color from shooting a ray into the scene.  This does not account for reflection.
@@ -57,9 +50,6 @@ render vport scene = Image vport (map (getColorAt) isects)
     where
         rays   = genRays [0,0,0] vport
         isects = map (traceRay scene) rays
-
---render' :: Viewport -> [Sphere] -> [Ray] -> [Color]
---render' vp scn rays = map (findIntersections scn) rays
 
 -- We shoot rays through the window.  If the image is to be 8x8, then this will shoot 64 rays through the window, always
 -- ensuring that a ray will shoot through each of the corners of the window and the center of the window at (0,0,1).

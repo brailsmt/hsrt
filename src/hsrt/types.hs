@@ -16,16 +16,15 @@ instance Show Color where
     where
       conv c = (show $ round $ c * ppmMaxColorValue)
 
+
 data LightSource = LightSource {
     location :: Point,
-    color    :: Color
+    lsColor  :: Color
 } deriving (Show, Eq)
+
 
 -- A world coordinate
 type Point = [Double]
-
--- The window is a fixed width window through which we view the world
-window = Viewport [-1,-1,1] [1,1,1]
 
 -- The view into the world.  The top left most corner is (0, 0), the bottom right corner defines how large the image is
 -- and is (width, height).
@@ -33,6 +32,55 @@ data Viewport = Viewport {
     topLeft     :: Point,
     bottomRight :: Point
 } deriving (Show, Eq)
+
+-- A ray of light
+data Ray = Ray {
+	origin    :: Point,
+	direction :: Point
+} deriving (Show, Eq)
+
+-- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
+-- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
+-- first row, Pixels [width+1..width*2] as row 2, etc...
+data Image = Image {
+    imgData :: [Color]
+} deriving (Show, Eq)
+
+-- A Sphere
+data Sphere = Sphere {
+	center      :: Point,
+	radius      :: Double,
+	sphereColor :: Color
+} deriving (Show, Eq)
+
+-- A polygon with N vertices.
+data Polygon = Polygon {
+    vertices     :: [Point],
+    polygonColor :: Color
+} deriving (Show, Eq)
+
+-- A scene is a collection of renderable objects.
+data Scene = Scene {
+    viewport  :: Viewport,
+    spheres   :: [Sphere],
+--  Forget about polygons for now.
+--  polygons  :: [Polygon],
+    lights    :: [LightSource]
+}
+
+
+-- This is a very OO way of reasoning about things that can be rendered and I don't like it
+class Renderable a where
+    intersectionT :: Ray -> a      -> Double
+    normalAt      :: Ray -> Double -> a -> Ray
+    colorAt       :: Ray -> Double -> a -> Color -- This is simplistic...  the color that is contributed is dependend upon the angle to the light source
+
+
+
+
+-- The window is a fixed width window through which we view the world
+window = Viewport [-1,-1,1] [1,1,1]
+
 -- Build a viewport of width x heigth with the camera centered in the middle at a distance 'dist' from the viewport.  
 -- The top left point is (-1/2 width, -1/2 height, dist).
 -- The bottom right is (1/2 width, 1/2 height, dist).
@@ -47,28 +95,6 @@ width (Viewport tl br) = abs $ (head tl) - (head br)
 
 height :: Viewport -> Double
 height (Viewport tl br) = abs $ (head $ tail tl) - (head $ tail br)
-
--- A ray of light
-data Ray = Ray {
-	origin    :: Point,
-	direction :: Point
-} deriving (Show, Eq)
-
-class Renderable a where
-    intersectionT :: Ray -> a      -> Double
-    normalAt      :: Ray -> Double -> a -> Ray
-    colorAt       :: Ray -> Double -> a -> Color -- This is simplistic...  the color that is contributed is dependend upon the angle to the light source
-
--- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
--- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
--- first row, Pixels [width+1..width*2] as row 2, etc...
-data Image = Image {
-    viewport :: Viewport,
-    imgData :: [Color]
-} deriving (Show, Eq)
-
--- A Scene is just a list of Renderables
-type Scene a = [Renderable a]
 
 -- Returns the point in world space at some distance t from the origin
 -- p = r0 + d*t
