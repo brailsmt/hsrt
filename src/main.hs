@@ -2,7 +2,6 @@ module Main where
 
 import HSRT
 import HSRT.Types
-import HSRT.Renderable
 import HSRT.Renderable.Sphere
 import HSRT.SceneReader
 

@@ -16,6 +16,11 @@ instance Show Color where
     where
       conv c = (show $ round $ c * ppmMaxColorValue)
 
+data LightSource = LightSource {
+    location :: Point,
+    color    :: Color
+} deriving (Show, Eq)
+
 -- A world coordinate
 type Point = [Double]
 
@@ -52,7 +57,7 @@ data Ray = Ray {
 class Renderable a where
     intersectionT :: Ray -> a      -> Double
     normalAt      :: Ray -> Double -> a -> Ray
-    colorAt       :: Ray -> Double -> a -> Color
+    colorAt       :: Ray -> Double -> a -> Color -- This is simplistic...  the color that is contributed is dependend upon the angle to the light source
 
 -- An image is a list of Colors, logically it is a grid of colors but using the PPM image format there is no need to do
 -- anything but list the pixel values in order.  The image viewer will display the first row as Pixels [0..width] as the
@@ -64,7 +69,6 @@ data Image = Image {
 
 -- A Scene is just a list of Renderables
 type Scene a = [Renderable a]
-
 
 -- Returns the point in world space at some distance t from the origin
 -- p = r0 + d*t
@@ -90,6 +94,16 @@ defaultColor = Color 0 0 0
 -- Subtract one point from another
 diff :: Point -> Point -> Point
 diff = zipWith (-) 
+
+sumColors :: Color -> Color -> Color
+sumColors c1 c2 = Color ((red c1)+(red c2)) ((green c1)+(green c2)) ((blue c1)+(blue c2))
+
+-- Average color values over a list of colors
+avgColor :: [Color] -> Color
+avgColor colors = Color ((sums (red))/len) ((sums (green))/len) ((sums (blue))/len)
+    where
+        len = fromIntegral $ length colors
+        sums f = (sum . (map (f))) colors
 
 instance Observable Color where { observer = observeBase }
 instance Observable Ray where { observer = observeBase }

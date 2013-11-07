@@ -1,13 +1,4 @@
-module HSRT.Renderable.Sphere 
-(
-    Sphere,
-    center,
-    radius,
-    mksphere,
-    intersectionT,
-    normalAt,
-    colorAt,
-) where
+module HSRT.Renderable.Sphere where
 
 import HSRT.Types
 import Debug.Hood.Observe
@@ -18,7 +9,6 @@ data Sphere = Sphere {
 	radius :: Double,
     color  :: Color
 } deriving (Show, Eq)
-mksphere = Sphere
 
 instance Observable Sphere where
     observer = observeBase
@@ -34,8 +24,9 @@ instance Renderable Sphere where
       where 
           p = pointAt ray t
 
-  -- Finds the closest point on the sphere where the ray intersects and returns the value for t to determine the point
-  -- along the ray from the formula p = r0 + d*t.
+  -- Finds the closest point on the sphere where the ray 
+  -- intersects and returns the value for t to determine 
+  -- the point along the ray from the formula p = r0 + d*t.
   intersectionT ray sphere 
       | discriminant < 0 = -1.0
       | t0 >= 0          = t0

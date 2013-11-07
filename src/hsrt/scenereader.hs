@@ -3,11 +3,11 @@ module HSRT.SceneReader (
 ) where
 
 import HSRT.Types
-import HSRT.Renderable
+import HSRT.Renderable.Sphere
 import Text.ParserCombinators.Parsec
 
-readScene :: String -> [Sphere]
-readScene _ = (mksphere [0,0,90] 50 (Color 1 0 0)) : []
+readScene _ = (Sphere [0,0,90] 50 (Color 1 0 0)) : []
+lightSources = [LightSource [0,90,90] (Color 1 1 1)]
 
 scene = "sphere: (0,0,0) 0xff0000"
 
