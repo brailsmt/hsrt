@@ -17,20 +17,13 @@ instance Show Color where
       conv c = (show $ round $ c * ppmMaxColorValue)
 
 
-data LightSource = LightSource {
-    location :: Point,
-    lsColor  :: Color
-} deriving (Show, Eq)
-
-
 -- A world coordinate
 type Point = [Double]
 
--- The view into the world.  The top left most corner is (0, 0), the bottom right corner defines how large the image is
--- and is (width, height).
-data Viewport = Viewport {
-    topLeft     :: Point,
-    bottomRight :: Point
+-- Define a point lightsource within a scene
+data LightSource = LightSource {
+    location :: Point,
+    lsColor  :: Color
 } deriving (Show, Eq)
 
 -- A ray of light
@@ -61,7 +54,7 @@ data Polygon = Polygon {
 
 -- A scene is a collection of renderable objects.
 data Scene = Scene {
-    viewport  :: Viewport,
+    viewport  :: Window,
     spheres   :: [Sphere],
 --  Forget about polygons for now.
 --  polygons  :: [Polygon],
@@ -76,25 +69,25 @@ class Renderable a where
     colorAt       :: Ray -> Double -> a -> Color -- This is simplistic...  the color that is contributed is dependend upon the angle to the light source
 
 
-
-
 -- The window is a fixed width window through which we view the world
-window = Viewport [-1,-1,1] [1,1,1]
+type Window = (Point, Point)
+topLeft  win = fst win
+botRight win = snd win
 
 -- Build a viewport of width x heigth with the camera centered in the middle at a distance 'dist' from the viewport.  
 -- The top left point is (-1/2 width, -1/2 height, dist).
 -- The bottom right is (1/2 width, 1/2 height, dist).
 -- The distance is the distance from the camera
-mkviewport :: Double -> Double -> Double -> Viewport
-mkviewport w h d = Viewport [-halfw, -halfh, d] [halfw, halfw, d]
+mkviewport :: Double -> Double -> Double -> Window
+mkviewport w h d = ([-halfw, -halfh, d], [halfw, halfw, d])
     where
         halfw = (1/2)*w
         halfh = (1/2)*h
-width :: Viewport -> Double
-width (Viewport tl br) = abs $ (head tl) - (head br)
+width :: Window -> Double
+width (tl, br) = abs $ (head tl) - (head br)
 
-height :: Viewport -> Double
-height (Viewport tl br) = abs $ (head $ tail tl) - (head $ tail br)
+height :: Window -> Double
+height (tl,br) = abs $ (head $ tail tl) - (head $ tail br)
 
 -- Returns the point in world space at some distance t from the origin
 -- p = r0 + d*t
@@ -133,5 +126,4 @@ avgColor colors = Color ((sums (red))/len) ((sums (green))/len) ((sums (blue))/l
 
 instance Observable Color where { observer = observeBase }
 instance Observable Ray where { observer = observeBase }
-instance Observable Viewport where { observer = observeBase }
 instance Observable Image where { observer = observeBase }
