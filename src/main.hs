@@ -2,8 +2,6 @@ module Main where
 
 import HSRT
 import HSRT.Types
-import HSRT.Renderable.Sphere
-import HSRT.SceneReader
 
 import System.IO
 import System.Environment
@@ -12,6 +10,9 @@ import Data.List.Split
 
 
 --intersection = head $ sortIntersections $ (observe "findIntersections" (findIntersections)) (head rays) scene
+
+objects = [Sphere [0,0,1] 1 (Color 0 0 1), Sphere [0,1,0] 1 (Color 0 1 0), Sphere [1,0,0] 1 (Color 1 0 0)]
+lightSources  = [LightSource [0,1000,0] white]
 
 -- Print a PPM header for a P3 PPM image.
 ppmHeader :: Image -> String
@@ -33,10 +34,10 @@ writeImage handle image = do
 main = do
   args <- getArgs
   imgHandle <- openFile (fname args) WriteMode
-  writeImage imgHandle $ rndr (width args) (height args) (readScene "")
+  writeImage imgHandle $ rndr (width args) (height args) 
   hClose imgHandle
     where 
       fname  = head 
       width  = (read . head . tail)
       height = (read . head . tail . tail)
-      rndr w h scene = renderScene (mkviewport w h 1) scene
+      rndr w h = renderScene (Scene (mkviewport w h 1) objects lightSources)

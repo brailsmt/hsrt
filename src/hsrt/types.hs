@@ -16,6 +16,7 @@ instance Show Color where
     where
       conv c = (show $ round $ c * ppmMaxColorValue)
 
+white = Color 1 1 1
 
 -- A world coordinate
 type Point = [Double]
@@ -61,18 +62,13 @@ data Scene = Scene {
     lights    :: [LightSource]
 }
 
-
--- This is a very OO way of reasoning about things that can be rendered and I don't like it
-class Renderable a where
-    intersectionT :: Ray -> a      -> Double
-    normalAt      :: Ray -> Double -> a -> Ray
-    colorAt       :: Ray -> Double -> a -> Color -- This is simplistic...  the color that is contributed is dependend upon the angle to the light source
-
-
 -- The window is a fixed width window through which we view the world
 type Window = (Point, Point)
 topLeft  win = fst win
 botRight win = snd win
+
+-- The window is a fixed width window through which we view the world
+window = ([-1.0,-1.0,1.0], [1.0,1.0,1.0])
 
 -- Build a viewport of width x heigth with the camera centered in the middle at a distance 'dist' from the viewport.  
 -- The top left point is (-1/2 width, -1/2 height, dist).
@@ -83,8 +79,9 @@ mkviewport w h d = ([-halfw, -halfh, d], [halfw, halfw, d])
     where
         halfw = (1/2)*w
         halfh = (1/2)*h
+
 width :: Window -> Double
-width (tl, br) = abs $ (head tl) - (head br)
+width (tl,br) = abs $ (head tl) - (head br)
 
 height :: Window -> Double
 height (tl,br) = abs $ (head $ tail tl) - (head $ tail br)
@@ -127,3 +124,27 @@ avgColor colors = Color ((sums (red))/len) ((sums (green))/len) ((sums (blue))/l
 instance Observable Color where { observer = observeBase }
 instance Observable Ray where { observer = observeBase }
 instance Observable Image where { observer = observeBase }
+
+-- Return the normal at the point where the ray collides with a sphere
+normalAt :: Ray -> Double -> Sphere -> Ray
+normalAt ray t (Sphere c _ _) = Ray p (diff c p)
+    where 
+        p = pointAt ray t
+
+-- Finds the closest point on the sphere where the ray 
+-- intersects and returns the value for t to determine 
+-- the point along the ray from the formula p = r0 + d*t.
+intersectionT :: Ray -> Sphere -> Double
+intersectionT ray sphere 
+    | discriminant < 0 = -1.0
+    | t0 >= 0          = t0
+    | otherwise        = t1
+    where 
+        v  = diff (origin ray) (center sphere)
+        d  = direction ray
+        a  = d `dot` d
+        b  = v `dot` d
+        c  = v `dot` v - (radius sphere)^2
+        t0  = ((-b) - (sqrt discriminant))/ a
+        t1  = ((-b) + (sqrt discriminant))/ a
+        discriminant = (b^2) - (a * c)
