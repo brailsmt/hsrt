@@ -1,5 +1,6 @@
 -- Haskell Ray Tracer
 
+{- BEGIN Point related functions -}
 -- A basic coordinate in 3 dimensional space
 data Point = Point {
     x :: Double,
@@ -30,3 +31,18 @@ scale n point = (mkpointL . map (* n)) (coords point)
 -- Find the distance between two points.  Also known as the Euclidean Distance.
 distance :: Point -> Point -> Double
 distance p1 p2 = (sqrt . sum . (map (^2)) . coords) $ translate p1 p2
+{- END Point related functiona -}
+
+{- BEGIN Color related functions -}
+data Color = Color {
+      red   :: Double
+    , green :: Double
+    , blue  :: Double
+    --, alpha :: Double
+} deriving (Show, Eq)
+type Colors = [Color]
+
+addColors :: Color -> Color -> Color
+addColors (Color r1 g1 b1) (Color r2 g2 b2) = Color (r1+r2) (g1+g2) (b1+b2)
+{- END Color related functions -}
+
